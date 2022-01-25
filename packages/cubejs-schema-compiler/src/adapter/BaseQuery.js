@@ -628,13 +628,21 @@ export class BaseQuery {
         R.fromPairs,
       )(multipliedMeasures.concat(regularMeasures).concat(cumulativeMeasures.map(([multiplied, measure]) => measure))),
     };
-
+    /*DEFAULT
     const join = R.drop(1, toJoin)
       .map(
         (q, i) => (this.dimensionAliasNames().length ?
           `INNER JOIN (${q}) as q_${i + 1} ON ${this.dimensionsJoinCondition(`q_${i}`, `q_${i + 1}`)}` :
           `, (${q}) as q_${i + 1}`),
       ).join('\n');
+      */
+     //CUSTOM
+     const join = R.drop(1, toJoin)
+     .map(
+       (q, i) => (this.dimensionAliasNames().length ?
+         `FULL OUTER JOIN (${q}) as q_${i + 1} ON ${this.dimensionsJoinCondition(`q_${i}`, `q_${i + 1}`)}` :
+         `, (${q}) as q_${i + 1}`),
+     ).join('\n');
 
     const columnsToSelect = this.evaluateSymbolSqlWithContext(
       () => this.dimensionColumns('q_0').concat(this.measures.map(m => m.selectColumns())).join(', '),
